@@ -2,7 +2,7 @@ import os
 from google.cloud import texttospeech
 from google.cloud import texttospeech_v1
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '.\env\discord-bot-349622-acc1834af7e3.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '.\\venv\discord-bot-349622-acc1834af7e3.json' 
 client = texttospeech_v1.TextToSpeechClient()
 
 text = "ái chà bạn đã làm tôi mở mang"
@@ -12,7 +12,7 @@ synthesis_input = texttospeech_v1.SynthesisInput(text=text)
 
 voice = texttospeech_v1.VoiceSelectionParams(
     language_code='vi-VN',
-    name='vi-VN-Standard-A',
+    name='vi-VN-Wavenet-A',
     ssml_gender=texttospeech_v1.SsmlVoiceGender.FEMALE,
 )
 
