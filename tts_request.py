@@ -15,7 +15,7 @@ audio_config = texttospeech.AudioConfig(
     audio_encoding=texttospeech.AudioEncoding.MP3
 )
 
-async def tts_request(text):
+async def request(text):
     # input text
     synthesis_input = texttospeech_v1.SynthesisInput(text=text)
     response = client.synthesize_speech(
