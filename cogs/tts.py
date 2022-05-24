@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord import FFmpegPCMAudio
 import asyncio
+from tempfile import TemporaryFile
 
 import os
 from google.cloud import texttospeech
@@ -26,10 +27,10 @@ async def request(text):
     response = client.synthesize_speech(
         input=synthesis_input, voice=voice, audio_config=audio_config
     )
-    with open("output.mp3", "wb") as out:
-        # Write the response to the output file.
-        out.write(response.audio_content)
-        print('Audio content written to file "output.mp3"')
+    fp = TemporaryFile()
+    fp.write(response.audio_content)
+    fp.seek(0)
+    return fp
 
 
 class TTS(commands.Cog):
@@ -40,10 +41,10 @@ class TTS(commands.Cog):
     @commands.command(pass_context = True)
     async def tts(self, ctx):
         content = ctx.message.content[4:]
-        await request(content)
+        fp = await request(content)
 
         voice = ctx.voice_client
-        source = FFmpegPCMAudio('output.mp3')
+        source = FFmpegPCMAudio(fp, pipe=True)
         voice.play(source)
         voice.pause()
         await asyncio.sleep(1)
@@ -51,14 +52,23 @@ class TTS(commands.Cog):
 
     @tts.before_invoke
     async def ensure_voice(self, ctx):
+        # If bot not in any voice channel
         if ctx.voice_client is None:
+            # If user is in a voice channel
             if ctx.author.voice:
                 await ctx.author.voice.channel.connect()
+            # If user not in a voice channel
             else:
                 await ctx.send("You are not connected to a voice channel.")
                 raise commands.CommandError("Author not connected to a voice channel.")
-        elif ctx.voice_client.is_playing():
-            ctx.voice_client.stop()
+        # If bot already in a voice channel
+        else:
+            # If bot and user arent in the same vc
+            if ctx.voice_client.channel != ctx.author.voice.channel:
+                await ctx.send('You need to be in my voicechannel.')
+                raise commands.CommandInvokeError('You need to be in my voicechannel.')
+            elif ctx.voice_client.is_playing():
+                ctx.voice_client.stop()
         
 def setup(client):
     client.add_cog(TTS(client))
