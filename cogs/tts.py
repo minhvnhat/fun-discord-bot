@@ -1,14 +1,14 @@
-import discord
 from discord.ext import commands
 from discord import FFmpegPCMAudio
 import asyncio
-from tempfile import TemporaryFile
-
 import os
+from tempfile import TemporaryFile
 from google.cloud import texttospeech
 from google.cloud import texttospeech_v1
+from dotenv import load_dotenv
+load_dotenv()
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '.\\venv\discord-bot-349622-acc1834af7e3.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv('GOOGLE_CRED')
 client = texttospeech_v1.TextToSpeechClient()
 
 # config, no change

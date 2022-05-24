@@ -3,11 +3,9 @@ import discord
 from discord.ext import commands
 from discord import FFmpegPCMAudio
 from dotenv import load_dotenv
+load_dotenv()
 import os 
 import logging
-
-# load from .env file
-load_dotenv()
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
